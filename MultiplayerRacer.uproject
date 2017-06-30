@@ -3,6 +3,13 @@
 	"EngineAssociation": "4.16",
 	"Category": "",
 	"Description": "",
+	"Modules": [
+		{
+			"Name": "MultiplayerRacer",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		}
+	],
 	"Plugins": [
 		{
 			"Name": "PhysXVehicles",
