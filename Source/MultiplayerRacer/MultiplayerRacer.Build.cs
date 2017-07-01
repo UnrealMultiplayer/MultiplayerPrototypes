@@ -10,8 +10,6 @@ public class MultiplayerRacer : ModuleRules
 
 		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "PhysXVehicles", "HeadMountedDisplay" });
 
-        DynamicallyLoadedModuleNames.Add("OnlineSubsystemSteam");
-
-        Definitions.Add("HMD_MODULE_INCLUDED=1");
+		Definitions.Add("HMD_MODULE_INCLUDED=1");
 	}
 }
