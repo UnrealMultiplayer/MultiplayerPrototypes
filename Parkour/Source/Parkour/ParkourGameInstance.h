@@ -17,4 +17,8 @@ class PARKOUR_API UParkourGameInstance : public UGameInstance
 public:
 	virtual void Init() override;
 	
+	void HostServer();
+
+private:
+	void SessionCreated(FName name, bool success);
 };
