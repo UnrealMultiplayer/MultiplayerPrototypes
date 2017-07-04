@@ -15,6 +15,6 @@ class PARKOUR_API UParkourGameInstance : public UGameInstance
 	GENERATED_BODY()
 
 public:
-	virtual void StartGameInstance() override;
+	virtual void Init() override;
 	
 };
