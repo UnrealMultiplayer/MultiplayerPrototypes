@@ -15,10 +15,18 @@ class PARKOUR_API UParkourGameInstance : public UGameInstance
 	GENERATED_BODY()
 
 public:
+
+	UParkourGameInstance();
+
+	UFUNCTION(BlueprintCallable, Category = "UI")
+	void LoadMainMenu();
+
 	virtual void Init() override;
 	
 	void HostServer();
 
 private:
 	void SessionCreated(FName name, bool success);
+
+	UClass *ServerMenuClass = nullptr;
 };
