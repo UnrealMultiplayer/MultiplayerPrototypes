@@ -7,7 +7,7 @@ public class ParkourTarget : TargetRules
 {
 	public ParkourTarget(TargetInfo Target) : base(Target)
 	{
-		Type = TargetType.Game;
+        Type = TargetType.Game;
 		ExtraModuleNames.Add("Parkour");
 	}
 }

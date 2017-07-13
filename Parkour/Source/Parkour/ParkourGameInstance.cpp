@@ -19,7 +19,10 @@ void UParkourGameInstance::HostServer()
 	FOnlineSessionSettings settings;
 	sessionMngr->OnCreateSessionCompleteDelegates.AddUObject(this, &UParkourGameInstance::SessionCreated);
 	bool success = sessionMngr->CreateSession(0, "MyGame", settings);
-	UE_LOG(LogTemp, Warning, TEXT("Server hosting success %s."), *FString(success ? "True" : "False"));
+	UE_LOG(LogTemp, Warning, TEXT("Server hosting success n %s."), *FString(success ? "True" : "False"));
+	TSharedRef<FOnlineSessionSearch> search(new FOnlineSessionSearch());
+	//sessionMngr->OnFindSessionsCompleteDelegates.AddUObject(this, &UParkourGameInstance::SessionCreated);
+	sessionMngr->FindSessions(0, search);
 }
 
 void UParkourGameInstance::SessionCreated(FName name, bool success)
