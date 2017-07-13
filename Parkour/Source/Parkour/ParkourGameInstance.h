@@ -6,6 +6,7 @@
 #include "Engine/GameInstance.h"
 #include "ParkourGameInstance.generated.h"
 
+class UServerMenu;
 /**
  * 
  */
@@ -28,5 +29,9 @@ public:
 private:
 	void SessionCreated(FName name, bool success);
 
-	UClass *ServerMenuClass = nullptr;
+	UPROPERTY()
+	UClass *ServerMenuClass;
+
+	UPROPERTY()
+	UServerMenu *Menu;
 };

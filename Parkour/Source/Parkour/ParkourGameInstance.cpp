@@ -4,14 +4,16 @@
 #include "OnlineSubsystem.h"
 #include "Interfaces/OnlineSessionInterface.h"
 #include "OnlineSessionSettings.h"
-#include "Runtime/UMG/Public/Blueprint/UserWidget.h"
+#include "Blueprint/UserWidget.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/PlayerController.h"
 
+#include "UI/ServerMenu.h"
+
 UParkourGameInstance::UParkourGameInstance() {
 	// This must be in constructor or will throw
-	ConstructorHelpers::FClassFinder<UUserWidget> ServerMenu(TEXT("/Game/ThirdPersonCPP/UI/ServerMenu"));
+	ConstructorHelpers::FClassFinder<UServerMenu> ServerMenu(TEXT("/Game/ThirdPersonCPP/UI/WBP_ServerMenu"));
 	if (ServerMenu.Class == nullptr) return;
 	ServerMenuClass = ServerMenu.Class;
 }
@@ -19,15 +21,25 @@ UParkourGameInstance::UParkourGameInstance() {
 void UParkourGameInstance::LoadMainMenu()
 {
 	if (ServerMenuClass == nullptr) return;
-	auto menu = CreateWidget<UUserWidget>(this, ServerMenuClass);
-	if (menu == nullptr) return;
-	menu->AddToViewport();
+	Menu = CreateWidget<UServerMenu>(this, ServerMenuClass);
+
+	if (Menu == nullptr) {
+		UE_LOG(LogTemp, Warning, TEXT("Couldn't create widget."))
+		return;
+	}
+	Menu->AddToViewport();
+
 	auto PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
 	FInputModeUIOnly data;
 	data.SetLockMouseToViewport(false);
-	data.SetWidgetToFocus(menu->TakeWidget());
+	data.SetWidgetToFocus(Menu->TakeWidget());
 	PlayerController->SetInputMode(data);
+
 	PlayerController->bShowMouseCursor = true;
+
+	Menu->AddServer();
+	Menu->AddServer();
+	Menu->AddServer();
 }
 
 void UParkourGameInstance::Init()
