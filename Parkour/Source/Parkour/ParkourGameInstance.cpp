@@ -27,6 +27,8 @@ void UParkourGameInstance::LoadMainMenu()
 		UE_LOG(LogTemp, Warning, TEXT("Couldn't create widget."))
 		return;
 	}
+	Menu->SetGameInstance(this);
+
 	Menu->AddToViewport();
 
 	auto PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);

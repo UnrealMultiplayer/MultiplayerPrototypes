@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "ServerMenu.generated.h"
 
+class UParkourGameInstance;
 /**
  * 
  */
@@ -18,4 +19,10 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "Data")
 	void AddServer();
+	void SetGameInstance(UParkourGameInstance *GameInstance);
+
+protected:
+	UPROPERTY(BlueprintReadOnly)
+	UParkourGameInstance *GameInstance;
+
 };

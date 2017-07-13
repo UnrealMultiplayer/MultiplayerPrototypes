@@ -21,9 +21,10 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "UI")
 	void LoadMainMenu();
-
+	
 	virtual void Init() override;
 	
+	UFUNCTION(BlueprintCallable, Category = "UI")
 	void HostServer();
 
 private:
