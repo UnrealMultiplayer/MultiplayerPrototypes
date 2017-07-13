@@ -8,6 +8,8 @@
 #include "UObject/ConstructorHelpers.h"
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/PlayerController.h"
+#include "Engine/World.h"
+#include "TimerManager.h"
 
 #include "UI/ServerMenu.h"
 
@@ -49,6 +51,7 @@ void UParkourGameInstance::Init()
 	Super::Init();
 	UE_LOG(LogTemp, Warning, TEXT("Game instance started."));
 	HostServer();
+	GetWorld()->GetTimerManager().SetTimer(ServerCheckTimer, this, &UParkourGameInstance::FindServers, 2, true);
 }
 
 void UParkourGameInstance::HostServer()
@@ -62,6 +65,11 @@ void UParkourGameInstance::HostServer()
 	TSharedRef<FOnlineSessionSearch> search(new FOnlineSessionSearch());
 	//sessionMngr->OnFindSessionsCompleteDelegates.AddUObject(this, &UParkourGameInstance::SessionCreated);
 	sessionMngr->FindSessions(0, search);
+}
+
+void UParkourGameInstance::FindServers()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Scanning servers."));
 }
 
 void UParkourGameInstance::SessionCreated(FName name, bool success)

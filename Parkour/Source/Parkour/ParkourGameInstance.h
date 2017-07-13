@@ -7,6 +7,7 @@
 #include "ParkourGameInstance.generated.h"
 
 class UServerMenu;
+struct FTimerHandle;
 /**
  * 
  */
@@ -27,6 +28,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "UI")
 	void HostServer();
 
+	void FindServers();
+
 private:
 	void SessionCreated(FName name, bool success);
 
@@ -35,4 +38,6 @@ private:
 
 	UPROPERTY()
 	UServerMenu *Menu;
+
+	FTimerHandle ServerCheckTimer;
 };
