@@ -18,7 +18,8 @@ class PARKOUR_API UServerMenu : public UUserWidget
 public:
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "Data")
-	void AddServer();
+	void AddServer(const FString& ServerName);
+
 	void SetGameInstance(UParkourGameInstance *GameInstance);
 
 protected:

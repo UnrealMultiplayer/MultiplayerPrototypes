@@ -1,7 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "ParkourGameInstance.h"
-#include "OnlineSubsystem.h"
 #include "Interfaces/OnlineSessionInterface.h"
 #include "OnlineSessionSettings.h"
 #include "Blueprint/UserWidget.h"
@@ -40,10 +39,6 @@ void UParkourGameInstance::LoadMainMenu()
 	PlayerController->SetInputMode(data);
 
 	PlayerController->bShowMouseCursor = true;
-
-	Menu->AddServer();
-	Menu->AddServer();
-	Menu->AddServer();
 }
 
 void UParkourGameInstance::Init()
@@ -56,23 +51,34 @@ void UParkourGameInstance::Init()
 
 void UParkourGameInstance::HostServer()
 {
-	auto subsystem = IOnlineSubsystem::Get();
-	auto sessionMngr = subsystem->GetSessionInterface();
+	auto sessionMngr = GetSession();
 	FOnlineSessionSettings settings;
 	sessionMngr->OnCreateSessionCompleteDelegates.AddUObject(this, &UParkourGameInstance::SessionCreated);
 	bool success = sessionMngr->CreateSession(0, "MyGame", settings);
 	UE_LOG(LogTemp, Warning, TEXT("Server hosting success n %s."), *FString(success ? "True" : "False"));
-	TSharedRef<FOnlineSessionSearch> search(new FOnlineSessionSearch());
-	//sessionMngr->OnFindSessionsCompleteDelegates.AddUObject(this, &UParkourGameInstance::SessionCreated);
-	sessionMngr->FindSessions(0, search);
 }
 
 void UParkourGameInstance::FindServers()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Scanning servers."));
+	if (Menu == nullptr) return;
+
+	auto sessionMngr = GetSession();
+	ServerSearch = new FOnlineSessionSearch();
+	//sessionMngr->OnFindSessionsCompleteDelegates.AddUObject(this, &UParkourGameInstance::SessionCreated);
+	sessionMngr->FindSessions(0, ServerSearch);
+	for (auto&& server : search->SearchResults) {
+		UE_LOG(LogTemp, Warning, TEXT("Found server"));
+		Menu->AddServer(server.GetSessionIdStr());
+	}
 }
 
 void UParkourGameInstance::SessionCreated(FName name, bool success)
 {
 	UE_LOG(LogTemp, Warning, TEXT("Server hosting begun %s with success %s."), *name.ToString(), *FString(success ? "True" : "False"));
+}
+
+IOnlineSessionPtr UParkourGameInstance::GetSession()
+{
+	auto subsystem = IOnlineSubsystem::Get();
+	return subsystem->GetSessionInterface();
 }

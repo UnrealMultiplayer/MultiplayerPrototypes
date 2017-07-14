@@ -4,10 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "Engine/GameInstance.h"
+#include "OnlineSubsystem.h"
+
 #include "ParkourGameInstance.generated.h"
 
-class UServerMenu;
-struct FTimerHandle;
 /**
  * 
  */
@@ -33,11 +33,14 @@ public:
 private:
 	void SessionCreated(FName name, bool success);
 
+	IOnlineSessionPtr GetSession();
+
 	UPROPERTY()
 	UClass *ServerMenuClass;
 
 	UPROPERTY()
-	UServerMenu *Menu;
+	class UServerMenu *Menu;
 
-	FTimerHandle ServerCheckTimer;
+	struct FTimerHandle ServerCheckTimer;
+	TSharedRef<FOnlineSessionSearch> ServerSearch;
 };
