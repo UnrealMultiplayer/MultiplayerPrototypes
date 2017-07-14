@@ -2,7 +2,6 @@
 
 #include "ParkourGameInstance.h"
 #include "Interfaces/OnlineSessionInterface.h"
-#include "OnlineSessionSettings.h"
 #include "Blueprint/UserWidget.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Kismet/GameplayStatics.h"
@@ -39,37 +38,48 @@ void UParkourGameInstance::LoadMainMenu()
 	PlayerController->SetInputMode(data);
 
 	PlayerController->bShowMouseCursor = true;
+
+	UE_LOG(LogTemp, Warning, TEXT("Get here."))
+	FindServers();
 }
 
 void UParkourGameInstance::Init()
 {
 	Super::Init();
 	UE_LOG(LogTemp, Warning, TEXT("Game instance started."));
-	HostServer();
-	GetWorld()->GetTimerManager().SetTimer(ServerCheckTimer, this, &UParkourGameInstance::FindServers, 2, true);
+	auto sessionMngr = GetSession();
+	sessionMngr->OnCreateSessionCompleteDelegates.AddUObject(this, &UParkourGameInstance::SessionCreated);
+	sessionMngr->OnFindSessionsCompleteDelegates.AddUObject(this, &UParkourGameInstance::FindServersFinished);
 }
 
 void UParkourGameInstance::HostServer()
 {
 	auto sessionMngr = GetSession();
 	FOnlineSessionSettings settings;
-	sessionMngr->OnCreateSessionCompleteDelegates.AddUObject(this, &UParkourGameInstance::SessionCreated);
 	bool success = sessionMngr->CreateSession(0, "MyGame", settings);
 	UE_LOG(LogTemp, Warning, TEXT("Server hosting success n %s."), *FString(success ? "True" : "False"));
 }
 
 void UParkourGameInstance::FindServers()
 {
+	UE_LOG(LogTemp, Warning, TEXT("null menu"));
 	if (Menu == nullptr) return;
 
+	UE_LOG(LogTemp, Warning, TEXT("Finding servers"));
 	auto sessionMngr = GetSession();
-	ServerSearch = new FOnlineSessionSearch();
-	//sessionMngr->OnFindSessionsCompleteDelegates.AddUObject(this, &UParkourGameInstance::SessionCreated);
-	sessionMngr->FindSessions(0, ServerSearch);
-	for (auto&& server : search->SearchResults) {
+	ServerSearch = MakeShareable(new FOnlineSessionSearch());
+	sessionMngr->FindSessions(0, ServerSearch.ToSharedRef());
+}
+
+void UParkourGameInstance::FindServersFinished(bool Success)
+{
+	UE_LOG(LogTemp, Warning, TEXT("Finished finding servers"));
+	for (auto&& server : ServerSearch->SearchResults) {
 		UE_LOG(LogTemp, Warning, TEXT("Found server"));
 		Menu->AddServer(server.GetSessionIdStr());
 	}
+
+	GetWorld()->GetTimerManager().SetTimer(ServerCheckTimer, this, &UParkourGameInstance::FindServers, 2, false);
 }
 
 void UParkourGameInstance::SessionCreated(FName name, bool success)

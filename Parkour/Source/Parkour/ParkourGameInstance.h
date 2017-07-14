@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Engine/GameInstance.h"
 #include "OnlineSubsystem.h"
+#include "OnlineSessionSettings.h"
 
 #include "ParkourGameInstance.generated.h"
 
@@ -32,6 +33,7 @@ public:
 
 private:
 	void SessionCreated(FName name, bool success);
+	void FindServersFinished(bool Success);
 
 	IOnlineSessionPtr GetSession();
 
@@ -42,5 +44,5 @@ private:
 	class UServerMenu *Menu;
 
 	struct FTimerHandle ServerCheckTimer;
-	TSharedRef<FOnlineSessionSearch> ServerSearch;
+	TSharedPtr<FOnlineSessionSearch> ServerSearch = nullptr;
 };
