@@ -14,24 +14,23 @@
 UParkourGameInstance::UParkourGameInstance() {
 	// This must be in constructor or will throw
 	ConstructorHelpers::FClassFinder<UServerMenu> ServerMenu(TEXT("/Game/ThirdPersonCPP/UI/WBP_ServerMenu"));
-	if (ServerMenu.Class == nullptr) return;
+	if (!ensure(ServerMenu.Class != nullptr)) return;
 	ServerMenuClass = ServerMenu.Class;
 }
 
 void UParkourGameInstance::LoadMainMenu()
 {
-	if (ServerMenuClass == nullptr) return;
+	if (!ensure(ServerMenuClass != nullptr)) return;
 	Menu = CreateWidget<UServerMenu>(this, ServerMenuClass);
 
-	if (Menu == nullptr) {
-		UE_LOG(LogTemp, Warning, TEXT("Couldn't create widget."))
-		return;
-	}
+	if (!ensure(Menu != nullptr)) return;
 	Menu->SetGameInstance(this);
 
 	Menu->AddToViewport();
 
 	auto PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+	if (!ensure(PlayerController != nullptr)) return;
+
 	FInputModeUIOnly data;
 	data.SetLockMouseToViewport(false);
 	data.SetWidgetToFocus(Menu->TakeWidget());
@@ -48,6 +47,8 @@ void UParkourGameInstance::Init()
 	Super::Init();
 	UE_LOG(LogTemp, Warning, TEXT("Game instance started."));
 	auto sessionMngr = GetSession();
+	if (!sessionMngr.IsValid()) return;
+
 	sessionMngr->OnCreateSessionCompleteDelegates.AddUObject(this, &UParkourGameInstance::SessionCreated);
 	sessionMngr->OnFindSessionsCompleteDelegates.AddUObject(this, &UParkourGameInstance::FindServersFinished);
 }
@@ -55,6 +56,8 @@ void UParkourGameInstance::Init()
 void UParkourGameInstance::HostServer()
 {
 	auto sessionMngr = GetSession();
+	if (!sessionMngr.IsValid()) return;
+
 	FOnlineSessionSettings settings;
 	bool success = sessionMngr->CreateSession(0, "MyGame", settings);
 	UE_LOG(LogTemp, Warning, TEXT("Server hosting success n %s."), *FString(success ? "True" : "False"));
@@ -63,23 +66,30 @@ void UParkourGameInstance::HostServer()
 void UParkourGameInstance::FindServers()
 {
 	UE_LOG(LogTemp, Warning, TEXT("null menu"));
-	if (Menu == nullptr) return;
+	if (!ensure(Menu != nullptr)) return;
 
 	UE_LOG(LogTemp, Warning, TEXT("Finding servers"));
 	auto sessionMngr = GetSession();
+	if (!ensure(sessionMngr.IsValid())) return;
+
 	ServerSearch = MakeShareable(new FOnlineSessionSearch());
+	if (!ensure(ServerSearch.IsValid())) return;
 	sessionMngr->FindSessions(0, ServerSearch.ToSharedRef());
 }
 
 void UParkourGameInstance::FindServersFinished(bool Success)
 {
+	if (!ensure(ServerSearch.IsValid())) return;
+	if (!ensure(Menu != nullptr)) return;
 	UE_LOG(LogTemp, Warning, TEXT("Finished finding servers"));
 	for (auto&& server : ServerSearch->SearchResults) {
 		UE_LOG(LogTemp, Warning, TEXT("Found server"));
 		Menu->AddServer(server.GetSessionIdStr());
 	}
 
-	GetWorld()->GetTimerManager().SetTimer(ServerCheckTimer, this, &UParkourGameInstance::FindServers, 2, false);
+	auto World = GetWorld();
+	if (!ensure(World != nullptr)) return;
+	World->GetTimerManager().SetTimer(ServerCheckTimer, this, &UParkourGameInstance::FindServers, 2, false);
 }
 
 void UParkourGameInstance::SessionCreated(FName name, bool success)
@@ -90,5 +100,6 @@ void UParkourGameInstance::SessionCreated(FName name, bool success)
 IOnlineSessionPtr UParkourGameInstance::GetSession()
 {
 	auto subsystem = IOnlineSubsystem::Get();
+	if (!ensure(subsystem != nullptr)) return nullptr;
 	return subsystem->GetSessionInterface();
 }
