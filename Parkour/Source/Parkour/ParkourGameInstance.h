@@ -34,6 +34,9 @@ public:
 private:
 	void SessionCreated(FName name, bool success);
 	void FindServersFinished(bool Success);
+	void SessionDestroyed(FName Name, bool Success);
+	void CreateSession(FName Name);
+
 
 	IOnlineSessionPtr GetSession();
 
