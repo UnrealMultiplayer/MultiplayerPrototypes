@@ -2,9 +2,9 @@
 
 #include "ServerMenu.h"
 #include "Components/ScrollBox.h"
+#include "Components/Button.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Blueprint/UserWidget.h"
-#include "../ParkourGameInstance.h"
 
 #include "ServerItem.h"
 
@@ -15,14 +15,26 @@ UServerMenu::UServerMenu(const FObjectInitializer& ObjectInitializer) : Super(Ob
 	ServerItemClass = ServerItem.Class;
 }
 
-void UServerMenu::SetGameInstance(UParkourGameInstance *GameInstance)
+bool UServerMenu::Initialize()
 {
-	this->GameInstance = GameInstance;
+	bool Success = Super::Initialize();
+	if (!Success) {
+			return false;
+	}
+	if (!ensure(HostServerButton != nullptr)) return false;
+	HostServerButton->OnClicked.AddDynamic(this, &UServerMenu::TriggerHostServer);
+	return true;
+}
+
+void UServerMenu::TriggerHostServer()
+{
+	OnHostServer.Broadcast();
 }
 
 void UServerMenu::AddServer(const FString& ServerName)
 {
-	auto Item = CreateWidget<UServerItem>(this->GameInstance, ServerItemClass);
+	if (!ensure(GetWorld() != nullptr)) return;
+	auto Item = CreateWidget<UServerItem>(GetWorld(), ServerItemClass);
 	Item->SetName(ServerName);
 	ServerList->AddChild(Item);
 }

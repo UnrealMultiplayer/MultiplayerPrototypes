@@ -27,7 +27,7 @@ void UParkourGameInstance::LoadMainMenu()
 	Menu = CreateWidget<UServerMenu>(this, ServerMenuClass);
 
 	if (!ensure(Menu != nullptr)) return;
-	Menu->SetGameInstance(this);
+	Menu->OnHostServer.AddUObject(this, &UParkourGameInstance::HostServer);
 
 	Menu->AddToViewport();
 

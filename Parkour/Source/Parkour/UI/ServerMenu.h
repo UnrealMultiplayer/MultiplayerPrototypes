@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "Delegate.h"
+
 #include "ServerMenu.generated.h"
 
 class UParkourGameInstance;
@@ -19,16 +21,21 @@ public:
 
 	UServerMenu(const FObjectInitializer& ObjectInitializer);
 
-	void AddServer(const FString& ServerName);
+	virtual bool Initialize() override;
 
-	void SetGameInstance(UParkourGameInstance *GameInstance);
+	void AddServer(const FString& ServerName);
 
 	UPROPERTY(meta = (BindWidget))
 	class UScrollBox* ServerList;
+	UPROPERTY(meta = (BindWidget))
+	class UButton* HostServerButton;
+
+	DECLARE_EVENT(UServerMenu, FOnHostServer);
+	FOnHostServer OnHostServer;
 
 protected:
-	UPROPERTY(BlueprintReadOnly)
-	UParkourGameInstance *GameInstance;
+	UFUNCTION()
+	void TriggerHostServer();
 	
 	UClass* ServerItemClass;
 };
