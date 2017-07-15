@@ -17,13 +17,18 @@ class PARKOUR_API UServerMenu : public UUserWidget
 
 public:
 
-	UFUNCTION(BlueprintImplementableEvent, Category = "Data")
+	UServerMenu(const FObjectInitializer& ObjectInitializer);
+
 	void AddServer(const FString& ServerName);
 
 	void SetGameInstance(UParkourGameInstance *GameInstance);
 
+	UPROPERTY(meta = (BindWidget))
+	class UScrollBox* ServerList;
+
 protected:
 	UPROPERTY(BlueprintReadOnly)
 	UParkourGameInstance *GameInstance;
-
+	
+	UClass* ServerItemClass;
 };

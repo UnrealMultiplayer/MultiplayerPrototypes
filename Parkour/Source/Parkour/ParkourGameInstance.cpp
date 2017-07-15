@@ -43,6 +43,8 @@ void UParkourGameInstance::LoadMainMenu()
 
 	UE_LOG(LogTemp, Warning, TEXT("Get here."))
 	FindServers();
+
+	Menu->AddServer("Hello");
 }
 
 void UParkourGameInstance::Init()
