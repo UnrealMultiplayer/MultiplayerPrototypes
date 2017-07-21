@@ -92,15 +92,15 @@ void UParkourGameInstance::CreateSession(FName Name)
 	settings.NumPrivateConnections = 0;
 	settings.bShouldAdvertise = true;
 	settings.bAllowJoinInProgress = true;
-	settings.bIsLANMatch = true;
+	settings.bIsLANMatch = false;
 	settings.bIsDedicated = false;
 	settings.bUsesStats = false;
 	settings.bAllowInvites = false;
-	settings.bUsesPresence = true;
+	settings.bUsesPresence = false;
 	settings.bAllowJoinViaPresence = true;
 	settings.bAllowJoinViaPresenceFriendsOnly = false;
 	settings.bAntiCheatProtected = false;
-	settings.BuildUniqueId = 0;
+	settings.BuildUniqueId = 342; // not used
 
 	bool success = sessionMngr->CreateSession(0, SESSION_NAME, settings);
 }
@@ -117,18 +117,17 @@ void UParkourGameInstance::FindServers()
 	ServerSearch = MakeShareable(new FOnlineSessionSearch());
 	ServerSearch->MaxSearchResults = 10;
 	ServerSearch->TimeoutInSeconds = 10;
-	ServerSearch->bIsLanQuery = true;
+	ServerSearch->bIsLanQuery = false;
 
 	if (!ensure(ServerSearch.IsValid())) return;
-	auto uniqueID = GetFirstGamePlayer()->GetUniqueID();
-	sessionMngr->FindSessions(uniqueID, ServerSearch.ToSharedRef());
+	sessionMngr->FindSessions(0, ServerSearch.ToSharedRef());
 }
 
 void UParkourGameInstance::FindServersFinished(bool Success)
 {
 	if (!ensure(ServerSearch.IsValid())) return;
 	if (!ensure(Menu != nullptr)) return;
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Finished finding servers"));
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Finished finding servers %s"), *FString(Success ? "True" : "False")));
 	for (auto&& server : ServerSearch->SearchResults) {
 		UE_LOG(LogTemp, Warning, TEXT("Found server"));
 		Menu->AddServer(server.GetSessionIdStr());
@@ -152,7 +151,7 @@ void UParkourGameInstance::SessionCreated(FName name, bool success)
 IOnlineSessionPtr UParkourGameInstance::GetSession()
 {
 	auto subsystem = IOnlineSubsystem::Get();
-	UE_LOG(LogTemp, Warning, TEXT("Found subsystem %s."), *subsystem->GetSubsystemName().ToString());
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Found subsystem %s."), *subsystem->GetSubsystemName().ToString()));
 
 	if (!ensure(subsystem != nullptr)) return nullptr;
 	return subsystem->GetSessionInterface();

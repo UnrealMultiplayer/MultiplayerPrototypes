@@ -9,5 +9,6 @@ public class Parkour : ModuleRules
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
         PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "OnlineSubsystem", "UMG" });
+        //DynamicallyLoadedModuleNames.Add("OnlineSubsystemSteam"); // Need to add to ensure steam loads on other machines.
     }
 }
