@@ -28,6 +28,7 @@ void UParkourGameInstance::LoadMainMenu()
 
 	if (!ensure(Menu != nullptr)) return;
 	Menu->OnHostServer.AddUObject(this, &UParkourGameInstance::HostServer);
+	Menu->OnRefreshServerList.AddUObject(this, &UParkourGameInstance::FindServers);
 
 	Menu->AddToViewport();
 
@@ -40,11 +41,6 @@ void UParkourGameInstance::LoadMainMenu()
 	PlayerController->SetInputMode(data);
 
 	PlayerController->bShowMouseCursor = true;
-
-	UE_LOG(LogTemp, Warning, TEXT("Get here."))
-	FindServers();
-
-	Menu->AddServer("Hello");
 }
 
 void UParkourGameInstance::Init()
@@ -132,10 +128,6 @@ void UParkourGameInstance::FindServersFinished(bool Success)
 		UE_LOG(LogTemp, Warning, TEXT("Found server"));
 		Menu->AddServer(server.GetSessionIdStr());
 	}
-
-	auto World = GetWorld();
-	if (!ensure(World != nullptr)) return;
-	World->GetTimerManager().SetTimer(ServerCheckTimer, this, &UParkourGameInstance::FindServers, 2, false);
 }
 
 void UParkourGameInstance::SessionCreated(FName name, bool success)

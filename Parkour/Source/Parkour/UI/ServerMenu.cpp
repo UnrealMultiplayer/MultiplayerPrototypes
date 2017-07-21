@@ -23,12 +23,9 @@ bool UServerMenu::Initialize()
 	}
 	if (!ensure(HostServerButton != nullptr)) return false;
 	HostServerButton->OnClicked.AddDynamic(this, &UServerMenu::TriggerHostServer);
+	if (!ensure(RefreshServerList != nullptr)) return false;
+	RefreshServerList->OnClicked.AddDynamic(this, &UServerMenu::TriggerRefreshServerList);
 	return true;
-}
-
-void UServerMenu::TriggerHostServer()
-{
-	OnHostServer.Broadcast();
 }
 
 void UServerMenu::AddServer(const FString& ServerName)

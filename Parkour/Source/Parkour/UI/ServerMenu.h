@@ -29,13 +29,25 @@ public:
 	class UScrollBox* ServerList;
 	UPROPERTY(meta = (BindWidget))
 	class UButton* HostServerButton;
+	UPROPERTY(meta = (BindWidget))
+	class UButton* RefreshServerList;
 
 	DECLARE_EVENT(UServerMenu, FOnHostServer);
 	FOnHostServer OnHostServer;
 
+	DECLARE_EVENT(UServerMenu, FOnRefreshServerList);
+	FOnRefreshServerList OnRefreshServerList;
+
 protected:
 	UFUNCTION()
-	void TriggerHostServer();
-	
+	void TriggerHostServer() {
+		OnHostServer.Broadcast();
+	}
+
+	UFUNCTION()
+	void TriggerRefreshServerList() {
+		OnRefreshServerList.Broadcast();
+	}
+
 	UClass* ServerItemClass;
 };
