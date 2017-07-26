@@ -36,7 +36,7 @@ void UParkourGameInstance::LoadMainMenu()
 	if (!ensure(PlayerController != nullptr)) return;
 
 	FInputModeUIOnly data;
-	data.SetLockMouseToViewport(false);
+	data.SetLockMouseToViewportBehavior(EMouseLockMode::LockOnCapture);
 	data.SetWidgetToFocus(Menu->TakeWidget());
 	PlayerController->SetInputMode(data);
 
