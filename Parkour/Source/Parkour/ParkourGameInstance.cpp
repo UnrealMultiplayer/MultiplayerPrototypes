@@ -92,7 +92,7 @@ void UParkourGameInstance::CreateSession(FName Name)
 	settings.bIsDedicated = false;
 	settings.bUsesStats = false;
 	settings.bAllowInvites = false;
-	settings.bUsesPresence = false;
+	settings.bUsesPresence = true;
 	settings.bAllowJoinViaPresence = true;
 	settings.bAllowJoinViaPresenceFriendsOnly = false;
 	settings.bAntiCheatProtected = false;
@@ -114,6 +114,7 @@ void UParkourGameInstance::FindServers()
 	ServerSearch->MaxSearchResults = 10;
 	ServerSearch->TimeoutInSeconds = 10;
 	ServerSearch->bIsLanQuery = false;
+	ServerSearch->QuerySettings.Set(SEARCH_PRESENCE, true, EOnlineComparisonOp::Equals);
 
 	if (!ensure(ServerSearch.IsValid())) return;
 	sessionMngr->FindSessions(0, ServerSearch.ToSharedRef());
