@@ -125,10 +125,12 @@ void UParkourGameInstance::FindServersFinished(bool Success)
 	if (!ensure(ServerSearch.IsValid())) return;
 	if (!ensure(Menu != nullptr)) return;
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Finished finding servers %s"), *FString(Success ? "True" : "False")));
-	for (auto&& server : ServerSearch->SearchResults) {
+	TArray<FString> ServerNames;
+	for (auto&& Server : ServerSearch->SearchResults) {
 		UE_LOG(LogTemp, Warning, TEXT("Found server"));
-		Menu->AddServer(server.GetSessionIdStr());
+		ServerNames.Add(Server.Session.OwningUserName);
 	}
+	Menu->AddServers(ServerNames);
 }
 
 void UParkourGameInstance::SessionCreated(FName name, bool success)

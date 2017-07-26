@@ -23,7 +23,7 @@ public:
 
 	virtual bool Initialize() override;
 
-	void AddServer(const FString& ServerName);
+	void AddServers(const TArray<FString>& ServerNames);
 
 	UPROPERTY(meta = (BindWidget))
 	class UScrollBox* ServerList;

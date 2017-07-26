@@ -28,10 +28,13 @@ bool UServerMenu::Initialize()
 	return true;
 }
 
-void UServerMenu::AddServer(const FString& ServerName)
+void UServerMenu::AddServers(const TArray<FString>& ServerNames)
 {
 	if (!ensure(GetWorld() != nullptr)) return;
-	auto Item = CreateWidget<UServerItem>(GetWorld(), ServerItemClass);
-	Item->SetName(ServerName);
-	ServerList->AddChild(Item);
+	ServerList->ClearChildren();
+	for (auto&& ServerName : ServerNames) {
+		auto Item = CreateWidget<UServerItem>(GetWorld(), ServerItemClass);
+		Item->SetName(ServerName);
+		ServerList->AddChild(Item);
+	}
 }
