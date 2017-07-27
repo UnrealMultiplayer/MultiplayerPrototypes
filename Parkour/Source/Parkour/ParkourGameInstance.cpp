@@ -1,7 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "ParkourGameInstance.h"
-#include "Interfaces/OnlineSessionInterface.h"
 #include "Blueprint/UserWidget.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Kismet/GameplayStatics.h"
@@ -54,6 +53,7 @@ void UParkourGameInstance::Init()
 	sessionMngr->OnCreateSessionCompleteDelegates.AddUObject(this, &UParkourGameInstance::SessionCreated);
 	sessionMngr->OnFindSessionsCompleteDelegates.AddUObject(this, &UParkourGameInstance::FindServersFinished);
 	sessionMngr->OnDestroySessionCompleteDelegates.AddUObject(this, &UParkourGameInstance::SessionDestroyed);
+	sessionMngr->OnJoinSessionCompleteDelegates.AddUObject(this, &UParkourGameInstance::FinishJoin);
 }
 
 void UParkourGameInstance::HostServer()
@@ -105,7 +105,38 @@ void UParkourGameInstance::CreateSession(FName Name)
 void UParkourGameInstance::JoinServer(uint32 ServerNumber)
 {
 	if (!ensure(GEngine != nullptr)) return;
+	auto sessionMngr = GetSession();
+	if (!ensure(sessionMngr.IsValid())) return;
+
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Join server number %d"), ServerNumber));
+
+	auto Server = ServerSearch->SearchResults[ServerNumber];
+	auto SessionName = FName("MyGame");
+	sessionMngr->JoinSession(0, SessionName, Server);
+
+}
+
+void UParkourGameInstance::FinishJoin(FName SessionName, EOnJoinSessionCompleteResult::Type Result)
+{
+	auto sessionMngr = GetSession();
+	if (!ensure(sessionMngr.IsValid())) return;
+	auto PlayerController = GetFirstLocalPlayerController();
+	if (!ensure(PlayerController != nullptr)) return;
+
+	if (Result != EOnJoinSessionCompleteResult::Success)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Failed to join for reason %d"), (uint32) Result); //NB: Displaying as decimal so won't be human readable
+		return;
+	}
+
+	FString ConnectionInfo;
+	bool Success = sessionMngr->GetResolvedConnectString(SessionName, ConnectionInfo);
+	if (!Success) return;
+
+	UE_LOG(LogTemp, Verbose, TEXT("Travelling to client"), (uint32)Result);
+
+	PlayerController->ClientTravel(ConnectionInfo, TRAVEL_Absolute);
+
 }
 
 void UParkourGameInstance::FindServers()
@@ -142,11 +173,13 @@ void UParkourGameInstance::FindServersFinished(bool Success)
 void UParkourGameInstance::SessionCreated(FName name, bool success)
 {
 	if (!ensure(GEngine != nullptr)) return;
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Server hosting begun %s with success %s."), *name.ToString(), *FString(success ? "True" : "False")));
-
 	auto sessionMngr = GetSession();
 	if (!ensure(sessionMngr.IsValid())) return;
-	//sessionMngr->StartSession(name);
+
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Server hosting begun %s with success %s."), *name.ToString(), *FString(success ? "True" : "False")));
+	
+	sessionMngr->StartSession(name);
+	GetWorld()->ServerTravel("/Game/ThirdPersonCPP/Maps/ThirdPersonExampleMap?listen");
 }
 
 IOnlineSessionPtr UParkourGameInstance::GetSession()

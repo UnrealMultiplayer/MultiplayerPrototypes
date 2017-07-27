@@ -6,6 +6,7 @@
 #include "Engine/GameInstance.h"
 #include "OnlineSubsystem.h"
 #include "OnlineSessionSettings.h"
+#include "Interfaces/OnlineSessionInterface.h"
 
 #include "ParkourGameInstance.generated.h"
 
@@ -37,6 +38,7 @@ private:
 	void SessionDestroyed(FName Name, bool Success);
 	void CreateSession(FName Name);
 	void JoinServer(uint32 ServerNumber);
+	void FinishJoin(FName SessionName, EOnJoinSessionCompleteResult::Type Result);
 
 
 	IOnlineSessionPtr GetSession();
