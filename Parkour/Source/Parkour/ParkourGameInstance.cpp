@@ -43,6 +43,19 @@ void UParkourGameInstance::LoadMainMenu()
 	PlayerController->bShowMouseCursor = true;
 }
 
+void UParkourGameInstance::UnloadMainMenu()
+{
+	Menu->RemoveFromViewport();
+
+	auto PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+	if (!ensure(PlayerController != nullptr)) return;
+
+	FInputModeGameOnly data; //NB: Different type here.
+	PlayerController->SetInputMode(data);
+
+	PlayerController->bShowMouseCursor = false;
+}
+
 void UParkourGameInstance::Init()
 {
 	Super::Init();
@@ -135,6 +148,8 @@ void UParkourGameInstance::FinishJoin(FName SessionName, EOnJoinSessionCompleteR
 
 	UE_LOG(LogTemp, Verbose, TEXT("Travelling to client"), (uint32)Result);
 
+	UnloadMainMenu();
+
 	PlayerController->ClientTravel(ConnectionInfo, TRAVEL_Absolute);
 
 }
@@ -179,6 +194,9 @@ void UParkourGameInstance::SessionCreated(FName name, bool success)
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Server hosting begun %s with success %s."), *name.ToString(), *FString(success ? "True" : "False")));
 	
 	sessionMngr->StartSession(name);
+
+	UnloadMainMenu();
+
 	GetWorld()->ServerTravel("/Game/ThirdPersonCPP/Maps/ThirdPersonExampleMap?listen");
 }
 

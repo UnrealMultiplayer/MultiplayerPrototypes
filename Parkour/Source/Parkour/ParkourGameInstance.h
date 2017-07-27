@@ -24,6 +24,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "UI")
 	void LoadMainMenu();
+	void UnloadMainMenu();
 	
 	virtual void Init() override;
 	
