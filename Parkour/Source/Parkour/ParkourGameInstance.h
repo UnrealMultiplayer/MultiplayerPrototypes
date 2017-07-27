@@ -36,6 +36,7 @@ private:
 	void FindServersFinished(bool Success);
 	void SessionDestroyed(FName Name, bool Success);
 	void CreateSession(FName Name);
+	void JoinServer(uint32 ServerNumber);
 
 
 	IOnlineSessionPtr GetSession();

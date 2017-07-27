@@ -31,6 +31,7 @@ bool UServerMenu::Initialize()
 void UServerMenu::ClearServers()
 {
 	ServerList->ClearChildren();
+	ServerCount = 0;
 }
 
 void UServerMenu::AddServer(const FString& ServerName)
@@ -38,5 +39,10 @@ void UServerMenu::AddServer(const FString& ServerName)
 	if (!ensure(GetWorld() != nullptr)) return;
 	auto Item = CreateWidget<UServerItem>(GetWorld(), ServerItemClass);
 	Item->SetName(ServerName);
+	uint32 CurrentServerCount = ServerCount; //NB: We must copy here.
+	Item->OnJoinPressed.AddLambda([this, CurrentServerCount]() {
+		OnJoinServer.Broadcast(CurrentServerCount);
+	});
 	ServerList->AddChild(Item);
+	ServerCount++;
 }

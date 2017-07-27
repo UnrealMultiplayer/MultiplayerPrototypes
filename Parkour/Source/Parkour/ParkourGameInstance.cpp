@@ -29,6 +29,7 @@ void UParkourGameInstance::LoadMainMenu()
 	if (!ensure(Menu != nullptr)) return;
 	Menu->OnHostServer.AddUObject(this, &UParkourGameInstance::HostServer);
 	Menu->OnRefreshServerList.AddUObject(this, &UParkourGameInstance::FindServers);
+	Menu->OnJoinServer.AddUObject(this, &UParkourGameInstance::JoinServer);
 
 	Menu->AddToViewport();
 
@@ -99,6 +100,12 @@ void UParkourGameInstance::CreateSession(FName Name)
 	settings.BuildUniqueId = 342; // not used
 
 	bool success = sessionMngr->CreateSession(0, SESSION_NAME, settings);
+}
+
+void UParkourGameInstance::JoinServer(uint32 ServerNumber)
+{
+	if (!ensure(GEngine != nullptr)) return;
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Join server number %d"), ServerNumber));
 }
 
 void UParkourGameInstance::FindServers()

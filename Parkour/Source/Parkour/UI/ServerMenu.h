@@ -39,6 +39,9 @@ public:
 	DECLARE_EVENT(UServerMenu, FOnRefreshServerList);
 	FOnRefreshServerList OnRefreshServerList;
 
+	DECLARE_EVENT_OneParam(UServerMenu, FOnJoinServer, uint32);
+	FOnJoinServer OnJoinServer;
+
 protected:
 	UFUNCTION()
 	void TriggerHostServer() {
@@ -51,4 +54,6 @@ protected:
 	}
 
 	UClass* ServerItemClass;
+
+	uint32 ServerCount = 0;
 };
